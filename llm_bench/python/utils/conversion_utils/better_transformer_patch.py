@@ -983,22 +983,6 @@ def gptj_wrapped_scaled_dot_product(
                 query, key, value, attn_mask=None, dropout_p=dropout_p, is_causal=False
             )
     else:
-        query_length, key_length = query.size(-2), key.size(-2)
-
-        # causal_mask is always [True, ..., True] otherwise, so executing this
-        # is unnecessary
-        if query_length > 1:
-            causal_mask = self.bias[:, :, key_length - query_length : key_length, :key_length].to(torch.bool)
-
-            causal_mask = torch.where(causal_mask, 0, mask_value)
-
-            # torch.Tensor.expand does no memory copy
-
-            if attention_mask is not None:
-                attention_mask = causal_mask + attention_mask
-            else:
-                causal_mask = causal_mask.expand(batch_size, -1, -1, -1)
-
         sdpa_result = torch.nn.functional.scaled_dot_product_attention(
             query, key, value, attn_mask=attention_mask, dropout_p=dropout_p, is_causal=False
         )
