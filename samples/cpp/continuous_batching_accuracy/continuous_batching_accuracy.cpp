@@ -62,8 +62,8 @@ int main(int argc, char* argv[]) try {
 
     std::vector<ov::genai::GenerationConfig> sampling_params_examples {
         ov::genai::beam_search(),
-        ov::genai::greedy(),
-        ov::genai::multinomial(),
+        // ov::genai::greedy(),
+        // ov::genai::multinomial(),
     };
 
     std::vector<std::string> prompts(num_prompts);
@@ -99,7 +99,7 @@ int main(int argc, char* argv[]) try {
 
     // It's possible to construct a Tokenizer from a different path.
     // If the Tokenizer isn't specified, it's loaded from the same folder.
-    ov::genai::ContinuousBatchingPipeline pipe(models_path, ov::genai::Tokenizer{models_path}, scheduler_config, device);
+    ov::genai::ContinuousBatchingPipeline pipe(models_path, ov::genai::Tokenizer{models_path}, scheduler_config, device, {{"KV_CACHE_PRECISION", "u8"}, {"INFERENCE_PRECISION_HINT", "bf16"}});
 
     if (use_prefix) {
         std::cout << "Running inference for prefix to compute the shared prompt's KV cache..." << std::endl;
